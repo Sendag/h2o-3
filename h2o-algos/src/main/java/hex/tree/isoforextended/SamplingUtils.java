@@ -1,5 +1,6 @@
 package hex.tree.isoforextended;
 
+import water.Key;
 import water.MRTask;
 import water.fvec.Chunk;
 import water.fvec.Frame;
@@ -17,7 +18,7 @@ public class SamplingUtils  {
      */
     public static Frame sampleOfApproxSize(Frame frame, int sampleSize, long seed) {
         return new SubSampleTask(sampleSize, frame.numRows(),seed)
-                .doAll(frame.types(), frame.vecs()).outputFrame();
+                .doAll(frame.types(), frame.vecs()).outputFrame(Key.make(), null, null);
     }
 
     /**

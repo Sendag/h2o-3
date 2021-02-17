@@ -1,13 +1,14 @@
 package hex.tree.isoforextended.isolationtree;
 
 import water.Iced;
+import water.Keyed;
 import water.util.ArrayUtils;
 import water.util.MathUtils;
 
 /**
  * IsolationTree structure with better memory performance. Store only the data that are needed for scoring.
  */
-public class CompressedIsolationTree extends Iced<CompressedIsolationTree> {
+public class CompressedIsolationTree extends Keyed<CompressedIsolationTree> {
 
     private final AbstractCompressedNode[] _nodes;
 

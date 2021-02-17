@@ -4,6 +4,7 @@ import hex.*;
 import hex.genmodel.GenModel;
 import hex.genmodel.utils.DistributionFamily;
 import hex.tree.gbm.GBMModel;
+import hex.tree.isoforextended.ExtendedIsolationForest;
 import hex.util.CheckpointUtils;
 import hex.util.LinearAlgebraUtils;
 import jsr166y.CountedCompleter;
@@ -267,6 +268,7 @@ public abstract class SharedTree<
               }
             }
           }
+          
           Log.info("Prior class distribution: " + Arrays.toString(_model._output._priorClassDist));
           Log.info("Model class distribution: " + Arrays.toString(_model._output._modelClassDist));
           if (_parms._sample_rate_per_class != null) {
@@ -275,6 +277,9 @@ public abstract class SharedTree<
               Log.info(" sample rate for class '" + response().domain()[i] + "' : " + _parms._sample_rate_per_class[i]);
           }
         }
+  
+        if (Math.random() < 0.5)
+          throw H2OModelBuilderIllegalArgumentException.makeFromBuilder(SharedTree.this);
 
         // top-level quantiles for all columns
         // non-numeric columns get a vector full of NAs
@@ -416,7 +421,7 @@ public abstract class SharedTree<
         }
         Timer kb_timer = new Timer();
         boolean converged = buildNextKTrees();
-        Log.info((tid + 1) + ". tree was built in " + kb_timer.toString());
+        Log.info((tid + 1) + ". tree was built in " + kb_timer.toString() + ". Free mem: " + PrettyPrint.bytes(H2O.CLOUD.free_mem()));
         _job.update(1);
         if (_model._output._treeStats._max_depth==0) {
           Log.warn("Nothing to split on: Check that response and distribution are meaningful (e.g., you are not using laplace/quantile regression with a binary response).");
@@ -1012,6 +1017,7 @@ public abstract class SharedTree<
 
     // all the compressed trees are stored on the driver node
     long max_mem = H2O.SELF._heartbeat.get_free_mem();
+    Log.info("Estimated total IF model size: " + PrettyPrint.bytes((long) (_parms._ntrees * avg_tree_mem_size)));
     if (_parms._ntrees * avg_tree_mem_size > max_mem) {
       String msg = "The tree model will not fit in the driver node's memory ("
               + PrettyPrint.bytes((long)avg_tree_mem_size)
