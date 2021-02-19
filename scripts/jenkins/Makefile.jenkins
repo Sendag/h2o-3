@@ -325,7 +325,7 @@ test-junit-smoke-jenkins:
 	@$(MAKE) -f $(THIS_FILE) test-junit-smoke
 
 test-junit-smoke:
-	DOONLY=$$(head -n 1 tests/doOnlyJunitSmokeTestList) ./gradlew h2o-core:test h2o-algos:test $$ADDITIONAL_GRADLE_OPTS
+	./gradlew h2o-clustering:test $$ADDITIONAL_GRADLE_OPTS
 
 test-junit-latest-smoke:
 	ADDITIONAL_TEST_JVM_OPTS="-Dsys.ai.h2o.debug.allowJavaVersions=15" DOONLY=$$(head -n 1 tests/doOnlyJunitSmokeTestList) \
