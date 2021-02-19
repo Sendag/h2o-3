@@ -19,16 +19,15 @@ import java.util.concurrent.Future;
 import static org.junit.Assert.*;
 
 public class AssistedClusteringEmbeddedConfigProviderTest {
-    
-    class TestAssistedClusteringEmbeddedConfigProvider extends AssistedClusteringEmbeddedConfigProvider{
-        @Override
-        public boolean isActive() {
-            return true;
-        }
-    }
+
+    private static final Logger LOG = Logger.getLogger(AssistedClusteringEmbeddedConfigProviderTest.class);
+    @Rule
+    public EnvironmentVariables environmentVariables = new EnvironmentVariables();
 
     @Test
     public void testEmbeddedConfigActivation() throws Exception {
+        environmentVariables.set("H2O_ASSISTED_CLUSTERING_REST", "True");
+
         final ExecutorService executor = Executors.newFixedThreadPool(1);
 
         final String flatfile = "1200:0000:AB00:1234:0000:2552:7777:1313\n" +
@@ -37,7 +36,7 @@ public class AssistedClusteringEmbeddedConfigProviderTest {
                 "9.255.255.255:54321";
 
         final Future<?> flatFileTest = executor.submit(() -> {
-            final AssistedClusteringEmbeddedConfigProvider provider = new TestAssistedClusteringEmbeddedConfigProvider();
+            final AssistedClusteringEmbeddedConfigProvider provider = new AssistedClusteringEmbeddedConfigProvider();
             assertTrue(provider.isActive());
             provider.init();
 
